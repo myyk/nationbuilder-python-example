@@ -1,0 +1,29 @@
+---
+db:
+  image: postgres
+
+testoutput:
+  image: busybox
+  volumes:
+    - /test-output
+
+base:
+  build: .
+
+app:
+  extends:
+    service: base
+    file: docker-compose.yml
+  links:
+   - db
+  volumes:
+   - ./mysite:/app
+  volumes_from:
+   - testoutput
+  ports:
+   - "8000:8000"
+  environment:
+    # DJANGO_SETTINGS_MODULE: "mysite.settings.test"
+    DEBUG: True
+    DATABASE_URL: "postgres://postgres@db/postgres"
+    UWSGI_CONFIG_TYPE: test
